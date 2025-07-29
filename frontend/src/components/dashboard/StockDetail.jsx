@@ -4,7 +4,8 @@ import { Card, Title, Text, AreaChart, TabGroup, TabList, Tab, TabPanels, TabPan
 import { HiTrendingUp, HiTrendingDown, HiClock, HiX, HiCurrencyDollar, HiScale } from 'react-icons/hi';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+ 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function StockDetail({ stock, onClose, theme }) {
   const [selectedPeriod, setSelectedPeriod] = useState('1D');
