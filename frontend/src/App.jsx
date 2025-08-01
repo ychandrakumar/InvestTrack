@@ -6,7 +6,7 @@ import Homepage from './pages/Homepage';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Portfolio from './pages/Portfolio';
-import Watchlist from './pages/Watchlist';
+// import Watchlist from './pages/Watchlist';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import StockDetail from './pages/StockDetail';
@@ -65,13 +65,6 @@ export default function App() {
             <ProtectedRoute>
               <DashboardLayout theme={theme}>
                 <Portfolio theme={theme} />
-              </DashboardLayout>
-            </ProtectedRoute>
-          } />
-          <Route path="/watchlist" element={
-            <ProtectedRoute>
-              <DashboardLayout theme={theme}>
-                <Watchlist theme={theme} />
               </DashboardLayout>
             </ProtectedRoute>
           } />
