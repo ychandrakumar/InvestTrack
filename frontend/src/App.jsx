@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Homepage from './pages/Homepage';
+import OtherAssets from './pages/OtherAssets';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/Dashboard';
 import Portfolio from './pages/Portfolio';
@@ -65,6 +66,13 @@ export default function App() {
             <ProtectedRoute>
               <DashboardLayout theme={theme}>
                 <Portfolio theme={theme} />
+              </DashboardLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/otherassets" element={
+            <ProtectedRoute>
+              <DashboardLayout theme={theme}>
+                <OtherAssets theme={theme} />
               </DashboardLayout>
             </ProtectedRoute>
           } />

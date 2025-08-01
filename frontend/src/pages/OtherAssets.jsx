@@ -19,9 +19,9 @@ const Portfolio = () => {
   
   // Autocomplete states
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState(["Gold" , "Silver"]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(["Gold" , "Silver"]);
+  const [showDropdown, setShowDropdown] = useState();
 
   useEffect(() => {
     console.log('Portfolio component mounted');
@@ -113,31 +113,31 @@ const Portfolio = () => {
 
   // Stock search and autocomplete functions
   const searchStocks = async (query) => {
-    if (!query || query.length < 2) {
-      setSearchResults([]);
-      setShowDropdown(false);
-      return;
-    }
+    // if (!query || query.length < 2) {
+    //   setSearchResults([]);
+    //   setShowDropdown(false);
+    //   return;
+    // }
 
-    setIsSearching(true);
-    try {
-      // Use our backend endpoint to search for stocks
-      const response = await api.get(`/stocks/search?q=${encodeURIComponent(query)}`);
+    setIsSearching(false);
+    // try {
+    //   // Use our backend endpoint to search for stocks
+    //   const response = await api.get(`/stocks/search?q=${encodeURIComponent(query)}`);
       
-      if (response.data && response.data.result) {
-        setSearchResults(response.data.result);
-        setShowDropdown(true);
-      } else {
-        setSearchResults([]);
-        setShowDropdown(false);
-      }
-    } catch (error) {
-      console.error('Error searching stocks:', error);
-      setSearchResults([]);
-      setShowDropdown(false);
-    } finally {
-      setIsSearching(false);
-    }
+    //   if (response.data && response.data.result) {
+    //     setSearchResults(response.data.result);
+    //     setShowDropdown(true);
+    //   } else {
+    //     setSearchResults([]);
+    //     setShowDropdown(false);
+    //   }
+    // } catch (error) {
+    //   console.error('Error searching stocks:', error);
+    //   setSearchResults([]);
+    //   setShowDropdown(false);
+    // } finally {
+    //   setIsSearching(false);
+    // }
   };
 
   const handleSearchChange = (e) => {
@@ -198,7 +198,7 @@ const Portfolio = () => {
               Portfolio
             </h1>
             <p className={`mt-2 text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Manage your stock investments
+              Manage your other assets
             </p>
           </div>
           <div className="flex justify-between items-center mb-8">
@@ -225,44 +225,14 @@ const Portfolio = () => {
             <span className="relative flex items-center justify-center w-6 h-6 bg-white bg-opacity-20 rounded-full">
               <HiPlus className="w-4 h-4" />
             </span>
-            <span className="relative">Add Stock</span>
+            <span className="relative">Add Asset</span>
           </motion.button>
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <motion.div
-            // initial={{ opacity: 0, y: 20 }}
-            // animate={{ opacity: 1, y: 0 }}
-            // transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <Card 
-              className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-2xl hover:-translate-y-1 rounded-2xl ${
-                theme === 'dark' 
-                  ? 'bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-gray-700/50' 
-                  : 'bg-gradient-to-br from-white to-gray-50 border border-gray-200/50'
-              }`}
-              decoration="none"
-            >
-              <div className="absolute top-0 right-0 w-24 h-24 transform translate-x-8 -translate-y-8">
-                <div className="absolute inset-0 bg-blue-500 opacity-20 rounded-full blur-2xl"></div>
-              </div>
-              <div className="relative flex items-center space-x-4">
-                <div className={`p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg ${
-                  theme === 'dark' ? 'shadow-blue-500/20' : 'shadow-blue-500/30'
-                }`}>
-                  <HiCollection className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <Text className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Total Holdings</Text>
-                  <Title className={`text-2xl font-bold mt-1 ${
-                    theme === 'dark' ? 'text-white' : 'text-gray-900'
-                  }`}>{stocks.length} Stocks</Title>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6  ">
+            
 
           <motion.div
             // initial={{ opacity: 0, y: 20 }}
@@ -295,6 +265,8 @@ const Portfolio = () => {
               </div>
             </Card>
           </motion.div>
+
+          <div></div>
 
           <motion.div
             // initial={{ opacity: 0, y: 20 }}
