@@ -21,7 +21,7 @@ const Portfolio = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(["Gold" , "Silver"]);
 
   useEffect(() => {
     console.log('Portfolio component mounted');
@@ -46,7 +46,7 @@ const Portfolio = () => {
   const fetchStocks = async () => {
     try {
       console.log('Fetching stocks from API');
-      const response = await api.get('/stocks');
+      const response = await api.get('/assets');// ..................................
       console.log('Stocks response:', response.data);
       setStocks(response.data);
       setLoading(false);
@@ -61,9 +61,8 @@ const Portfolio = () => {
     e.preventDefault();
     try {
       console.log('Adding stock:', newStock);
-      const response = await api.post('/stocks', {
+      const response = await api.post('/assets', {  //...................................
         name: newStock.name,
-        ticker: newStock.ticker,
         shares: parseFloat(newStock.shares),
         buy_price: parseFloat(newStock.buy_price)
       });
@@ -658,7 +657,7 @@ const Portfolio = () => {
 
                 <div>
                   <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Number of Shares
+                    Number of grams
                   </label>
                   <input
                     type="number"
@@ -727,8 +726,6 @@ const Portfolio = () => {
       {showEditModal && editingStock && createPortal(
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <motion.div
-            // initial={{ scale: 0.9, opacity: 0 }}
-            // animate={{ scale: 1, opacity: 1 }}
             className={`w-full max-w-md p-6 rounded-2xl shadow-2xl ${
               theme === 'dark'
                 ? 'bg-[#1f1f1f] border border-gray-600'
@@ -738,7 +735,7 @@ const Portfolio = () => {
             
             <div className="flex justify-between items-center mb-5">
               <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Edit Stock
+                Edit Asset
               </h3>
               <button
                 onClick={() => {
@@ -760,7 +757,7 @@ const Portfolio = () => {
               <div className="space-y-4">
                 <div>
                   <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Company Name
+                    Asset
                   </label>
                   <input
                     type="text"
@@ -776,23 +773,7 @@ const Portfolio = () => {
                 </div>
                 <div>
                   <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Ticker Symbol
-                  </label>
-                  <input
-                    type="text"
-                    value={editingStock.ticker}
-                    onChange={(e) => setEditingStock({ ...editingStock, ticker: e.target.value.toUpperCase() })}
-                    className={`w-full px-3 py-3 text-base rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-4 ${
-                      theme === 'dark'
-                        ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20'
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
-                    }`}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Number of Shares
+                    Number of grams
                   </label>
                   <input
                     type="number"
