@@ -5,6 +5,7 @@ require('dotenv').config();
 const supabase = require('./config/supabase');
 const stockRoutes = require('./routes/stocks');
 const watchlistRoutes = require('./routes/watchlist');
+const newsRoutes = require('./routes/news');
 const stockPriceService = require('./services/stockPriceService');
 
 const app = express();
@@ -13,6 +14,8 @@ const app = express();
 app.use(cors({
   origin: [
     'https://track-portfolio.vercel.app',
+    
+    'http://localhost:5173',
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -36,6 +39,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/stocks', stockRoutes);
+app.use('/api/news', newsRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 
 const PORT = process.env.PORT || 5000;

@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 
 // Debug environment variables
-console.log('🔍 Auth Middleware Environment Check:', {
+console.log(' Auth Middleware Environment Check:', {
   hasSupabaseUrl: !!process.env.SUPABASE_URL,
   hasSupabaseKey: !!process.env.SUPABASE_KEY,
   supabaseUrl: process.env.SUPABASE_URL ? 'Set' : 'Missing',
@@ -47,7 +47,7 @@ const authenticateUser = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error('❌ Auth middleware error:', error);
+    console.error(' Auth middleware error:', error);
     res.status(500).json({ error: 'Authentication failed' });
   }
 };

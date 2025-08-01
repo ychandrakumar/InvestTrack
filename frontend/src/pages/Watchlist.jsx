@@ -276,9 +276,9 @@ const Watchlist = () => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+      // initial={{ opacity: 0 }}
+      // animate={{ opacity: 1 }}
+      // transition={{ duration: 0.3 }}
       className={`p-6 min-h-screen ${theme === 'dark' ? 'bg-[#171717] text-white' : 'bg-white text-gray-800'}`}
     >
       {/* Header Section */}
@@ -332,8 +332,8 @@ const Watchlist = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Portfolio Overview Card */}
           <motion.div
-            whileHover={{ y: -2 }}
-            transition={{ duration: 0.2 }}
+            // whileHover={{ y: -2 }}
+            // transition={{ duration: 0.2 }}
             className={`relative p-6 rounded-2xl overflow-hidden ${
               theme === 'dark'
                 ? 'bg-[#1f1f1f]/80 border border-white/10 backdrop-blur-md'
@@ -381,8 +381,8 @@ const Watchlist = () => {
 
           {/* Target Progress Card */}
           <motion.div
-            whileHover={{ y: -2 }}
-            transition={{ duration: 0.2 }}
+            // whileHover={{ y: -2 }}
+            // transition={{ duration: 0.2 }}
             className={`relative p-6 rounded-2xl overflow-hidden ${
               theme === 'dark'
                 ? 'bg-[#1f1f1f]/80 border border-white/10 backdrop-blur-md'
@@ -445,8 +445,8 @@ const Watchlist = () => {
 
           {/* Value Analysis Card */}
           <motion.div
-            whileHover={{ y: -2 }}
-            transition={{ duration: 0.2 }}
+            // whileHover={{ y: -2 }}
+            // transition={{ duration: 0.2 }}
             className={`relative p-6 rounded-2xl overflow-hidden ${
               theme === 'dark'
                 ? 'bg-[#1f1f1f]/80 border border-white/10 backdrop-blur-md'
@@ -665,9 +665,9 @@ const Watchlist = () => {
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.2 }}
+            // initial={{ scale: 0.95, opacity: 0 }}
+            // animate={{ scale: 1, opacity: 1 }}
+            // transition={{ duration: 0.2 }}
             className={`w-full max-w-md p-6 rounded-2xl shadow-2xl ${
               theme === 'dark'
                 ? 'bg-[#1f1f1f] border border-gray-600'

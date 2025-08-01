@@ -227,6 +227,23 @@ const Portfolio = () => {
               Manage your stock investments
             </p>
           </div>
+          <div className="flex justify-between items-center mb-8">
+          <motion.button
+            // onClick={() => setShowAddModal(flase)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`px-6 py-2.5 flex items-center gap-2 rounded-xl font-semibold transition-all duration-300 relative m-4 overflow-hidden ${
+              theme === 'dark'
+                ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40'
+                : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30'
+            }`}
+          >
+            
+            <span className="relative flex items-center justify-center w-6 h-6 bg-white bg-opacity-20 rounded-full">
+              <HiPlus className="w-4 h-4" />
+            </span>
+            <span className="relative">Add Commodity</span>
+          </motion.button>
           <motion.button
             onClick={() => setShowAddModal(true)}
             onMouseEnter={() => setButtonHover(true)}
@@ -252,6 +269,7 @@ const Portfolio = () => {
             </span>
             <span className="relative">Add Stock</span>
           </motion.button>
+          </div>
         </div>
 
         {/* Quick Stats */}
@@ -758,6 +776,7 @@ const Portfolio = () => {
                 : 'bg-white border border-gray-200'
             }`}
           >
+            
             <div className="flex justify-between items-center mb-5">
               <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Edit Stock
