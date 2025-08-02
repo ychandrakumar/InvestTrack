@@ -63,39 +63,11 @@ export default function Dashboard({ theme: propTheme }) {
   }, [propTheme]);
 
     useEffect(() => {
-  const goldAsset = metals
-    .filter(metal => metal.name === "Gold")
-    .reduce(
-      (acc, metal) => {
-        acc.investment += metal.buy_price * metal.grams;
-        acc.current_value += metal.current_price * metal.grams;
-        return acc;
-      },
-      { name: "Gold", investment: 0, current_value: 0, ticker: "Gold" }
-    );
+      setAssets([...stocks, ...metals])
 
-  const silverAsset = metals
-    .filter(metal => metal.name === "Silver")
-    .reduce(
-      (acc, metal) => {
-        acc.investment += metal.buy_price * metal.grams;
-        acc.current_value += metal.current_price * metal.grams;
-        return acc;
-      },
-      { name: "Silver", investment: 0, current_value: 0, ticker: "Silver" }
-    );
-  const stockAsset = stocks.reduce(
-    (acc, stock) => {
-      acc.investment += stock.buy_price * stock.shares;
-      acc.current_value += stock.current_price * stock.shares;
-      return acc;
-    },
-    { name: "stock", investment: 0, current_value: 0, ticker: "stock" }
-  );
-
-  setAssets([goldAsset, silverAsset, stockAsset]);
-}, [stocks, metals]);
-
+      
+     
+  }, [stocks,metals]);
 
   useEffect(() => {
     const handleThemeChange = (e) => {
