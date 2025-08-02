@@ -1,9 +1,9 @@
 const supabase = require('../config/supabase');
 
-const Watchlist = {
+const Asset = {
   async findAll() {
     const { data, error } = await supabase
-      .from('watchlists')
+      .from('assets')
       .select('*');
     
     if (error) throw error;
@@ -12,7 +12,7 @@ const Watchlist = {
 
   async findByPk(id) {
     const { data, error } = await supabase
-      .from('watchlists')
+      .from('assets')
       .select('*')
       .eq('id', id)
       .single();
@@ -22,7 +22,7 @@ const Watchlist = {
       ...data,
       update: async (values) => {
         const { data: updatedData, error: updateError } = await supabase
-          .from('watchlists')
+          .from('assets')
           .update(values)
           .eq('id', id)
           .select()
@@ -33,7 +33,7 @@ const Watchlist = {
       },
       destroy: async () => {
         const { error: deleteError } = await supabase
-          .from('watchlists')
+          .from('assets')
           .delete()
           .eq('id', id);
         
@@ -52,7 +52,7 @@ const Watchlist = {
     };
 
     const { data, error } = await supabase
-      .from('watchlists')
+      .from('assets')
       .insert([dataToInsert])
       .select()
       .single();
@@ -62,4 +62,4 @@ const Watchlist = {
   }
 };
 
-module.exports = Watchlist; 
+module.exports = Asset; 

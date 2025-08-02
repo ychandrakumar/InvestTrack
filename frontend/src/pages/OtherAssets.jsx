@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { createPortal } from 'react-dom';
+import { Checkbox } from "@/components/ui/checkbox";
+import {Label } from "@/components/ui/label";
 import api from '../services/api';
 import {  Card,Title, Text} from '@tremor/react';
 import {  HiPlus,  HiPencil,  HiTrash,  HiTrendingUp,  HiTrendingDown,  HiCurrencyDollar,  HiCollection,HiChartBar} from 'react-icons/hi';
@@ -11,21 +13,19 @@ const Portfolio = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingStock, setEditingStock] = useState(null);
-  const [newStock, setNewStock] = useState({ name: '', ticker: '', shares: 1, buy_price: '' });
+  const [newStock, setNewStock] = useState({ name: '', grams: 0, buy_price: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [gold,setGold]=useState(false);
+  const [silver,setSilver]=useState(false);
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [buttonHover, setButtonHover] = useState(false);
   
-  // Autocomplete states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState(["Gold" , "Silver"]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [showDropdown, setShowDropdown] = useState();
+
 
   useEffect(() => {
     console.log('Portfolio component mounted');
-    fetchStocks();
+    fetchAssets();
 
     const handleThemeChange = (e) => {
       const newTheme = e.detail || localStorage.getItem('theme') || 'light';
@@ -43,11 +43,11 @@ const Portfolio = () => {
     };
   }, []);
 
-  const fetchStocks = async () => {
+  const fetchAssets = async () => {
     try {
       console.log('Fetching stocks from API');
       const response = await api.get('/assets');// ..................................
-      console.log('Stocks response:', response.data);
+      console.log('asset response:', response.data);
       setStocks(response.data);
       setLoading(false);
     } catch (error) {
@@ -63,11 +63,11 @@ const Portfolio = () => {
       console.log('Adding stock:', newStock);
       const response = await api.post('/assets', {  //...................................
         name: newStock.name,
-        shares: parseFloat(newStock.shares),
+        grams: parseFloat(newStock.grams),
         buy_price: parseFloat(newStock.buy_price)
       });
       handleModalClose();
-      await fetchStocks();
+      await fetchAssets();
     } catch (error) {
       console.error('Error adding stock:', error);
       setError(error.response?.data?.error || 'Failed to add stock');
@@ -111,69 +111,34 @@ const Portfolio = () => {
     setShowEditModal(true);
   };
 
-  // Stock search and autocomplete functions
-  const searchStocks = async (query) => {
-    // if (!query || query.length < 2) {
-    //   setSearchResults([]);
-    //   setShowDropdown(false);
-    //   return;
-    // }
 
-    setIsSearching(false);
-    // try {
-    //   // Use our backend endpoint to search for stocks
-    //   const response = await api.get(`/stocks/search?q=${encodeURIComponent(query)}`);
-      
-    //   if (response.data && response.data.result) {
-    //     setSearchResults(response.data.result);
-    //     setShowDropdown(true);
-    //   } else {
-    //     setSearchResults([]);
-    //     setShowDropdown(false);
-    //   }
-    // } catch (error) {
-    //   console.error('Error searching stocks:', error);
-    //   setSearchResults([]);
-    //   setShowDropdown(false);
-    // } finally {
-    //   setIsSearching(false);
-    // }
-  };
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    setNewStock({ ...newStock, name: '', ticker: '' });
+  // const handleSearchChange = (e) => {
+  //   const query = e.target.value;
+  //   setNewStock({ ...newStock, name: '', ticker: '' });
     
-    // Debounce the search
-    const timeoutId = setTimeout(() => {
-      searchStocks(query);
-    }, 300);
+  //   // Debounce the search
+  //   const timeoutId = setTimeout(() => {
+  //     searchStocks(query);
+  //   }, 300);
 
-    return () => clearTimeout(timeoutId);
-  };
+  //   return () => clearTimeout(timeoutId);
+  // };
 
-  const selectStock = (stock) => {
-    setNewStock({
-      ...newStock,
-      name: stock.description,
-      ticker: stock.symbol
-    });
-    setSearchQuery(stock.symbol);
-    setShowDropdown(false);
-    setSearchResults([]);
-  };
+ 
 
   const handleModalClose = () => {
     setShowAddModal(false);
-    setNewStock({ name: '', ticker: '', shares: 1, buy_price: '' });
-    setSearchQuery('');
-    setSearchResults([]);
-    setShowDropdown(false);
+    setNewStock({ name: '', grams: 1, buy_price: '' });
+    setGold(false);
+    setSilver(false);
+    // setSearchQuery('');
+    // setSearchResults([]);
+    // setShowDropdown(false);
   };
 
   const getTotalValue = () => {
-    return stocks.reduce((total, stock) => total + (stock.current_price * stock.shares), 0);
+    return stocks.reduce((total, stock) => total + (stock.current_price * stock.grams), 0);
   };
 
   const getTotalGainLoss = () => {
@@ -228,6 +193,7 @@ const Portfolio = () => {
             <span className="relative">Add Asset</span>
           </motion.button>
           </div>
+
         </div>
 
         {/* Quick Stats */}
@@ -351,7 +317,7 @@ const Portfolio = () => {
                 }`}>
                   <th className={`px-6 py-4 text-left text-sm font-semibold ${
                     theme === 'dark' ? 'text-gray-200' : 'text-gray-600'
-                  }`}>Stock</th>
+                  }`}>Asset</th>
                   <th className={`px-6 py-4 text-left text-sm font-semibold ${
                     theme === 'dark' ? 'text-gray-200' : 'text-gray-600'
                   }`}>Current Price</th>
@@ -399,9 +365,10 @@ const Portfolio = () => {
                   </tr>
                 ) : (
                   stocks.map((stock) => {
-                    const value = stock.current_price * stock.shares;
+                    const value = stock.current_price * stock.grams;
                     const gainLoss = ((stock.current_price - stock.buy_price) / stock.buy_price) * 100;
-                    const valueChange = (stock.current_price - stock.buy_price) * stock.shares;
+                    const valueChange = (stock.current_price - stock.buy_price) * stock.grams;
+                    console.log(value+" value is ");
                     
                     return (
                       <tr 
@@ -431,7 +398,7 @@ const Portfolio = () => {
                           <div className="flex flex-col">
                             <span className={`font-medium ${
                               theme === 'dark' ? 'text-gray-200' : 'text-gray-900'
-                            }`}>{stock.shares.toLocaleString()} shares</span>
+                            }`}>{stock.grams.toLocaleString()} grams</span>
                             <span className={`text-sm ${
                               theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
                             }`}>@ ${stock.buy_price.toLocaleString()}</span>
@@ -523,7 +490,7 @@ const Portfolio = () => {
           >
             <div className="flex justify-between items-center mb-5">
               <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Add New Stock
+                Add New Asset
               </h3>
               <button
                 onClick={handleModalClose}
@@ -543,89 +510,47 @@ const Portfolio = () => {
                 {/* Stock Search with Autocomplete */}
                 <div className="relative">
                   <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Search Stock
+                    Select asset
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                      className={`w-full px-3 py-3 text-base rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-4 ${
-                        theme === 'dark'
-                          ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20'
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500/20'
-                      }`}
-                      placeholder="Search for a stock (e.g., AAPL, Apple)"
-                      required
-                    />
-                    {isSearching && (
-                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Autocomplete Dropdown */}
-                  {showDropdown && searchResults.length > 0 && (
-                    <div className={`absolute z-10 w-full mt-1 rounded-xl border-2 shadow-xl max-h-60 overflow-y-auto ${
-                      theme === 'dark'
-                        ? 'bg-gray-800 border-gray-600'
-                        : 'bg-white border-gray-200'
-                    }`}>
-                      {searchResults.map((stock, index) => (
-                        <button
-                          key={`${stock.symbol}-${index}`}
-                          type="button"
-                          onClick={() => selectStock(stock)}
-                          className={`w-full px-4 py-3 text-left hover:bg-blue-500 hover:text-white transition-colors ${
-                            theme === 'dark'
-                              ? 'text-gray-200 hover:bg-blue-600'
-                              : 'text-gray-900 hover:bg-blue-500'
-                          } ${index === 0 ? 'rounded-t-xl' : ''} ${index === searchResults.length - 1 ? 'rounded-b-xl' : ''}`}
-                        >
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <div className="font-semibold">{stock.symbol}</div>
-                              <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                {stock.description}
-                              </div>
-                            </div>
-                            <div className={`text-xs px-2 py-1 rounded ${
-                              theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-                            }`}>
-                              {stock.primaryExchange}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
+                  <div className='flex grid-col-4 justify-between'>
+                    <div className="flex items-center gap-3 mx-4">
+                       <Checkbox id="gold" className="scale-125" checked={gold}  
+                       onCheckedChange={(e)=>{
+                        setGold(e); 
+                       if (e) {
+                          setSilver(false);
+                          setNewStock({ ...newStock, name: "Gold" });
+                          } else {
+                          setNewStock({ ...newStock, name: "" });
+                          }
+                         
+                      }}
+                       />
+                       <Label htmlFor="gold" className="scale-125">Gold</Label>
+                        </div>
+                     <div>
+                      <div className="flex items-center gap-3 mx-4">
+                       <Checkbox id="silver" className="scale-125" checked={silver}
+                        onCheckedChange={(e)=>{
+                          setSilver(e);
+                          if (e) {
+                          setGold(false);
+                          setNewStock({ ...newStock, name: "Silver" });
+                          } else {
+                          setNewStock({ ...newStock, name: "" });
+                          } 
+                          
+                         
+                        }}
+                       />
+                       <Label htmlFor="silver" className="scale-125">Silver</Label>
+                        </div>
                     </div>
-                  )}
+
+                  </div>
                 </div>
 
-                {/* Selected Stock Display */}
-                {newStock.ticker && newStock.name && (
-                  <div className={`p-3 rounded-xl border-2 ${
-                    theme === 'dark'
-                      ? 'bg-blue-900/20 border-blue-600/50'
-                      : 'bg-blue-50 border-blue-200'
-                  }`}>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className={`font-semibold ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>
-                          {newStock.ticker}
-                        </div>
-                        <div className={`text-sm ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
-                          {newStock.name}
-                        </div>
-                      </div>
-                      <div className={`text-xs px-2 py-1 rounded ${
-                        theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700'
-                      }`}>
-                        Selected
-                      </div>
-                    </div>
-                  </div>
-                )}
+              
 
                 <div>
                   <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -633,10 +558,9 @@ const Portfolio = () => {
                   </label>
                   <input
                     type="number"
-                    min="1"
-                    step="1"
-                    value={newStock.shares}
-                    onChange={(e) => setNewStock({ ...newStock, shares: Math.max(1, parseInt(e.target.value) || 0) })}
+                    step="any"
+                    value={newStock.grams}
+                    onChange={(e) => setNewStock({ ...newStock, grams:  parseFloat(e.target.value) })}
                     className={`w-full px-3 py-3 text-base rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-4 ${
                       theme === 'dark'
                         ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20'
@@ -647,14 +571,13 @@ const Portfolio = () => {
                 </div>
                 <div>
                   <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Buy Price
+                    Buy Price per gram
                   </label>
                   <input
                     type="number"
-                    min="0.01"
-                    step="0.01"
+                    step="any"
                     value={newStock.buy_price}
-                    onChange={(e) => setNewStock({ ...newStock, buy_price: Math.max(0.01, parseFloat(e.target.value) || 0) })}
+                    onChange={(e) => setNewStock({ ...newStock, buy_price:  parseFloat(e.target.value) })}
                     className={`w-full px-3 py-3 text-base rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-4 ${
                       theme === 'dark'
                         ? 'bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500/20'
@@ -679,14 +602,14 @@ const Portfolio = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={!newStock.ticker || !newStock.name}
+                  disabled={!newStock.name}
                   className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl ${
-                    newStock.ticker && newStock.name
+                     newStock.name
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800'
                       : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                   }`}
                 >
-                  Add Stock
+                  Add asset
                 </button>
               </div>
             </form>

@@ -45,7 +45,7 @@ export default function Sidebar({ theme }) {
   const navItems = [
     { path: '/dashboard', icon: HiHome, label: 'Dashboard' },
     { path: '/portfolio', icon: HiChartBar, label: 'Portfolio' },
-    { path: '/otherAssets', icon: HiStar, label: 'OtherAssests' },
+    { path: '/otherAssets', icon: HiStar, label: 'OtherAssets' },
     { path: '/news', icon: HiNewspaper, label: 'News' },
     { path: '/calendar', icon: HiCalendar, label: 'Calendar' }
   ];

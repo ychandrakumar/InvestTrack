@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const supabase = require('./config/supabase');
 const stockRoutes = require('./routes/stocks');
-const watchlistRoutes = require('./routes/watchlist');
+const assetRoutes = require('./routes/assets');
 const newsRoutes = require('./routes/news');
 const stockPriceService = require('./services/stockPriceService');
 
@@ -39,15 +39,16 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/stocks', stockRoutes);
+app.use('/api/assets', assetRoutes);
 app.use('/api/news', newsRoutes);
-app.use('/api/watchlist', watchlistRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 
 const start = async () => {
   try {
     // Start periodic stock price updates for existing stocks
-    stockPriceService.startPeriodicUpdates();
+    // stockPriceService.startPeriodicUpdates();
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);

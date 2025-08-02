@@ -6,7 +6,7 @@ const PortfolioAnalytics = ({ stocks, theme }) => {
   const [selectedStock, setSelectedStock] = useState(null);
 
   // Calculate total portfolio value
-  const totalValue = stocks.reduce((sum, stock) => sum + (stock.current_price * stock.shares), 0);
+  const totalValue = stocks.reduce((sum, stock) => sum + (stock.current_price * (stock.shares || stock.grams)), 0);
 
   // Custom colors for stocks
   const COLORS = [
@@ -24,13 +24,14 @@ const PortfolioAnalytics = ({ stocks, theme }) => {
 
   // Prepare data for the pie chart
   const chartData = stocks.map((stock, index) => ({
-    name: stock.ticker,
-    value: Number(((stock.current_price * stock.shares) / totalValue * 100).toFixed(2)),
+    name: stock.ticker || stock.name,
+    value: Number(((stock.current_price * (stock.shares || stock.grams)) / totalValue * 100).toFixed(2)),
     color: COLORS[index % COLORS.length],  // Cycle through colors
     details: {
       shares: stock.shares,
+      grams: stock.grams,
       price: stock.current_price,
-      value: stock.current_price * stock.shares,
+      value: stock.current_price * (stock.shares || stock.grams),
       buyPrice: stock.buy_price,
       gainLoss: ((stock.current_price - stock.buy_price) / stock.buy_price * 100).toFixed(2)
     }
@@ -127,7 +128,7 @@ const PortfolioAnalytics = ({ stocks, theme }) => {
           ${data.details.value.toLocaleString()}
         </p>
         <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-          {data.details.shares} shares @ ${data.details.price}
+          {data.details.shares || data.details.grams} shares @ ${data.details.price}
         </p>
         <p className={`text-xs mt-1 font-medium ${
           Number(data.details.gainLoss) >= 0 ? 'text-emerald-500' : 'text-red-500'

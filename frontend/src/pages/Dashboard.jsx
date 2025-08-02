@@ -7,26 +7,10 @@ import api from '../services/api';
 
 
 
-// const containerVariants = {
-//   hidden: { opacity: 0 },
-//   visible: {
-//     opacity: 1,
-//     transition: {
-//       staggerChildren: 0.1
-//     }
-//   }
-// };
-
-// const itemVariants = {
-//   hidden: { y: 20, opacity: 0 },
-//   visible: {
-//     y: 0,
-//     opacity: 1
-//   }
-// };
-
 export default function Dashboard({ theme: propTheme }) {
   const [stocks, setStocks] = useState([]);
+  const [metals, setMetals] = useState([]);
+  const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState(propTheme || localStorage.getItem('theme') || 'light');
@@ -78,6 +62,41 @@ export default function Dashboard({ theme: propTheme }) {
     }
   }, [propTheme]);
 
+    useEffect(() => {
+  const goldAsset = metals
+    .filter(metal => metal.name === "Gold")
+    .reduce(
+      (acc, metal) => {
+        acc.investment += metal.buy_price * metal.grams;
+        acc.current_value += metal.current_price * metal.grams;
+        return acc;
+      },
+      { name: "Gold", investment: 0, current_value: 0, ticker: "Gold" }
+    );
+
+  const silverAsset = metals
+    .filter(metal => metal.name === "Silver")
+    .reduce(
+      (acc, metal) => {
+        acc.investment += metal.buy_price * metal.grams;
+        acc.current_value += metal.current_price * metal.grams;
+        return acc;
+      },
+      { name: "Silver", investment: 0, current_value: 0, ticker: "Silver" }
+    );
+  const stockAsset = stocks.reduce(
+    (acc, stock) => {
+      acc.investment += stock.buy_price * stock.shares;
+      acc.current_value += stock.current_price * stock.shares;
+      return acc;
+    },
+    { name: "stock", investment: 0, current_value: 0, ticker: "stock" }
+  );
+
+  setAssets([goldAsset, silverAsset, stockAsset]);
+}, [stocks, metals]);
+
+
   useEffect(() => {
     const handleThemeChange = (e) => {
       console.log('Dashboard: Theme change event received:', e.detail.theme);
@@ -107,8 +126,9 @@ export default function Dashboard({ theme: propTheme }) {
 
   useEffect(() => {
     fetchStocks();
-    const interval = setInterval(fetchStocks, 60000); // Refresh every minute
-    return () => clearInterval(interval);
+    fetchMetals();
+    // const interval = setInterval(fetchStocks, 60000); // Refresh every minute
+    // return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -125,6 +145,7 @@ export default function Dashboard({ theme: propTheme }) {
       const response = await api.get('/stocks');
       console.log('Stocks fetched successfully:', response.data);
       setStocks(response.data);
+
       setLoading(false);
     } catch (err) {
       console.error('Error fetching stocks:', err);
@@ -133,66 +154,82 @@ export default function Dashboard({ theme: propTheme }) {
     }
   };
 
-  const generateChartData = () => {
-    if (!stocks.length) return [];
-
-    const currentTotalValue = stocks.reduce((sum, stock) => sum + (stock.current_price * stock.shares), 0);
-    const data = [];
-    
-    // Calculate daily percentage changes for each stock
-    const stockChanges = stocks.map(stock => {
-      const dailyChange = ((stock.current_price - stock.buy_price) / stock.buy_price) / 30; // Approximate daily change
-      return {
-        shares: stock.shares,
-        buyPrice: stock.buy_price,
-        dailyChange
-      };
-    });
-
-    const points = {
-      '1D': 24,
-      '1W': 7,
-      '1M': 30,
-      '3M': 90,
-      '1Y': 365,
-      'ALL': 365
-    }[selectedPeriod] || 7;
-
-    // Generate historical data points
-    for (let i = points - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-
-      // Calculate portfolio value for this date
-      let portfolioValue = stockChanges.reduce((sum, stock) => {
-        const daysAgo = i;
-        const historicalPrice = stock.buyPrice * (1 + (stock.dailyChange * (points - daysAgo)));
-        return sum + (historicalPrice * stock.shares);
-      }, 0);
-
-      // Add some minor realistic variation (+/- 0.5%)
-      const variation = (Math.random() * 0.01 - 0.005) * portfolioValue;
-      portfolioValue += variation;
-
-      data.push({
-        date: date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric',
-          ...(selectedPeriod === '1D' && { hour: '2-digit' })
-        }),
-        "Portfolio Value": Number(portfolioValue.toFixed(2))
-      });
+  const fetchMetals = async () => {
+    try {
+      console.log('Fetching stocks from API');
+      const response = await api.get('/assets');// ..................................
+      console.log('asset response:', response.data);
+      setMetals(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching stocks:', error);
+      setError('Failed to fetch stocks');
+      setLoading(false);
     }
-
-    // Ensure the last point matches the current total value
-    if (data.length > 0) {
-      data[data.length - 1]["Portfolio Value"] = currentTotalValue;
-    }
-    
-    return data;
   };
 
-  const chartdata = generateChartData();
+  
+
+  // const generateChartData = () => {
+  //   if (!stocks.length) return [];
+
+  //   const currentTotalValue = stocks.reduce((sum, stock) => sum + (stock.current_price * stock.shares), 0);
+  //   const data = [];
+    
+  //   // Calculate daily percentage changes for each stock
+  //   const stockChanges = stocks.map(stock => {
+  //     const dailyChange = ((stock.current_price - stock.buy_price) / stock.buy_price) / 30; // Approximate daily change
+  //     return {
+  //       shares: stock.shares,
+  //       buyPrice: stock.buy_price,
+  //       dailyChange
+  //     };
+  //   });
+
+  //   const points = {
+  //     '1D': 24,
+  //     '1W': 7,
+  //     '1M': 30,
+  //     '3M': 90,
+  //     '1Y': 365,
+  //     'ALL': 365
+  //   }[selectedPeriod] || 7;
+
+  //   // Generate historical data points
+  //   for (let i = points - 1; i >= 0; i--) {
+  //     const date = new Date();
+  //     date.setDate(date.getDate() - i);
+
+  //     // Calculate portfolio value for this date
+  //     let portfolioValue = stockChanges.reduce((sum, stock) => {
+  //       const daysAgo = i;
+  //       const historicalPrice = stock.buyPrice * (1 + (stock.dailyChange * (points - daysAgo)));
+  //       return sum + (historicalPrice * stock.shares);
+  //     }, 0);
+
+  //     // Add some minor realistic variation (+/- 0.5%)
+  //     const variation = (Math.random() * 0.01 - 0.005) * portfolioValue;
+  //     portfolioValue += variation;
+
+  //     data.push({
+  //       date: date.toLocaleDateString('en-US', { 
+  //         month: 'short', 
+  //         day: 'numeric',
+  //         ...(selectedPeriod === '1D' && { hour: '2-digit' })
+  //       }),
+  //       "Portfolio Value": Number(portfolioValue.toFixed(2))
+  //     });
+  //   }
+
+  //   // Ensure the last point matches the current total value
+  //   if (data.length > 0) {
+  //     data[data.length - 1]["Portfolio Value"] = currentTotalValue;
+  //   }
+    
+  //   return data;
+  // };
+
+  // const chartdata = generateChartData();
 
   if (loading) 
     return (
@@ -204,8 +241,8 @@ export default function Dashboard({ theme: propTheme }) {
     );
  
 
-  const totalValue = stocks.reduce((sum, stock) => sum + (stock.current_price * stock.shares), 0);
-  const totalGain = stocks.reduce((sum, stock) => sum + ((stock.current_price - stock.buy_price) * stock.shares), 0);
+  const totalValue = assets.reduce((sum, asset) => sum + (asset.current_price * (asset.shares || asset.grams)), 0);
+  const totalGain = assets.reduce((sum, stock) => sum + ((stock.current_price - stock.buy_price) * (stock.shares|| stock.grams)), 0);
   const percentageGain = (totalGain / (totalValue - totalGain)) * 100;
 
   return (
@@ -387,7 +424,7 @@ export default function Dashboard({ theme: propTheme }) {
                 <span className={`font-bold ${
                   theme === 'dark' ? 'text-purple-400' : 'text-purple-600'
                 }`}>
-                  {stocks.length} stocks
+                  {assets.length} stocks
                 </span>
               </div>
               <div className="flex items-center justify-between">
@@ -397,9 +434,9 @@ export default function Dashboard({ theme: propTheme }) {
                 <span className={`font-bold ${
                   theme === 'dark' ? 'text-green-400' : 'text-green-600'
                 }`}>
-                  {stocks.reduce((best, stock) => {
-                    const gain = ((stock.current_price - stock.buy_price) / stock.buy_price) * 100;
-                    return gain > best.gain ? { ticker: stock.ticker, gain } : best;
+                  {assets.reduce((best, asset) => {
+                    const gain = ((asset.current_price - asset.buy_price) / asset.buy_price) * 100;
+                    return gain > best.gain ? { ticker: asset.ticker || asset.name, gain } : best;
                   }, { ticker: '', gain: -Infinity }).ticker}
                 </span>
               </div>
@@ -460,7 +497,7 @@ export default function Dashboard({ theme: propTheme }) {
 
       {/* Charts Section */}
       <div className="flex flex-col gap-6 mb-6">
-        <div
+        {/* <div
           // variants={itemVariants}
           className={`p-6 rounded-2xl ${
             theme === 'dark'
@@ -645,6 +682,20 @@ export default function Dashboard({ theme: propTheme }) {
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" opacity="0.1" />
           </AreaChart>
+        </div> */}
+
+        <div
+          // variants={itemVariants}
+          className={`p-6 rounded-2xl ${
+            theme === 'dark'
+              ? 'bg-[#1f1f1f] border border-white/10'
+              : 'bg-white border border-gray-200'
+          }`}
+        >
+          <h3 className={`text-xl font-semibold mb-4 ${
+            theme === 'dark' ? 'text-white' : 'text-gray-800'
+          }`}>Assets Allocation</h3>
+          <PortfolioAnalytics stocks={assets} theme={theme} right={true} />
         </div>
 
         <div
@@ -658,7 +709,7 @@ export default function Dashboard({ theme: propTheme }) {
           <h3 className={`text-xl font-semibold mb-4 ${
             theme === 'dark' ? 'text-white' : 'text-gray-800'
           }`}>Portfolio Allocation</h3>
-          <PortfolioAnalytics stocks={stocks} theme={theme} />
+          <PortfolioAnalytics stocks={stocks} theme={theme} right={false} />
         </div>
       </div>
 
@@ -698,14 +749,14 @@ export default function Dashboard({ theme: propTheme }) {
               </tr>
             </thead>
             <tbody>
-              {stocks.map((stock) => {
-                const value = stock.current_price * stock.shares;
-                const gain = ((stock.current_price - stock.buy_price) / stock.buy_price) * 100;
+              {assets.map((asset) => {
+                const value = asset.current_price * (asset.shares || asset.grams);
+                const gain = ((asset.current_price - asset.buy_price) / asset.buy_price) * 100;
                 
                 return (
                   <tr 
-                    key={stock.id}
-                    onClick={() => setSelectedStock(stock)}
+                    key={asset.id}
+                    onClick={() => setSelectedStock(asset)}
                     className={`border-b cursor-pointer transition-colors ${
                       theme === 'dark' 
                         ? 'border-gray-700 hover:bg-white/5' 
@@ -716,21 +767,21 @@ export default function Dashboard({ theme: propTheme }) {
                       <div>
                         <div className={`font-medium ${
                           theme === 'dark' ? 'text-white' : 'text-gray-900'
-                        }`}>{stock.name}</div>
+                        }`}>{asset.name}</div>
                         <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
-                          {stock.ticker}
+                          {asset.ticker}
                         </div>
                       </div>
                     </td>
                     <td className={`py-3 px-4 ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
-                      ${stock.current_price.toLocaleString()}
+                      ${asset.current_price.toLocaleString()}
                     </td>
                     <td className={`py-3 px-4 ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
-                      {stock.shares.toLocaleString()} shares
+                      {(asset.shares || asset.grams).toLocaleString()} shares
                     </td>
                     <td className={`py-3 px-4 ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
@@ -747,7 +798,7 @@ export default function Dashboard({ theme: propTheme }) {
                             ? 'bg-red-900/30 text-red-400'
                             : 'bg-red-100 text-red-800'
                       }`}>
-                        {gain >= 0 ? '+' : ''}{gain.toFixed(2)}%
+                        {gain >= 0 ? '+' : '-'}{gain.toFixed(2)}%
                       </span>
                     </td>
                   </tr>
