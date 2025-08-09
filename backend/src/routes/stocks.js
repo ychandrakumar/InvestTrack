@@ -660,12 +660,12 @@ router.get('/:ticker/recommendations', async (req, res) => {
 router.get('/calendar/earnings', async (req, res) => {
   try {
     const { from, to } = req.query;
-    console.log('📅 Fetching earnings calendar...');
+    console.log(' Fetching earnings calendar...');
 
     const fromDate = from || new Date().toISOString().split('T')[0];
     const toDate = to || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     
-    console.log('📅 Date range:', { from: fromDate, to: toDate });
+    console.log(' Date range:', { from: fromDate, to: toDate });
 
     const response = await axios.get('https://finnhub.io/api/v1/calendar/earnings', {
       params: {
@@ -675,7 +675,7 @@ router.get('/calendar/earnings', async (req, res) => {
       }
     });
 
-    console.log('📅 Earnings calendar response:', {
+    console.log(' Earnings calendar response:', {
       status: response.status,
       dataLength: response.data?.earningsCalendar?.length || 0,
       hasData: !!response.data?.earningsCalendar
@@ -684,7 +684,7 @@ router.get('/calendar/earnings', async (req, res) => {
     // Return the real data from Finnhub API
     res.json(response.data);
   } catch (error) {
-    console.error('❌ Error fetching earnings calendar:', error.response?.data || error.message);
+    console.error(' Error fetching earnings calendar:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to fetch earnings calendar' });
   }
 });
@@ -761,7 +761,7 @@ router.get('/:ticker/dividends', async (req, res) => {
 // Get market status
 router.get('/market/status', async (req, res) => {
   try {
-    console.log('🏛️ Fetching market status...');
+    console.log(' Fetching market status...');
 
     const response = await axios.get('https://finnhub.io/api/v1/stock/market-status', {
       params: {
@@ -770,7 +770,7 @@ router.get('/market/status', async (req, res) => {
       }
     });
 
-    console.log('🏛️ Market status response:', {
+    console.log(' Market status response:', {
       status: response.status,
       data: response.data,
       hasData: !!response.data
@@ -778,7 +778,7 @@ router.get('/market/status', async (req, res) => {
     
     res.json(response.data);
   } catch (error) {
-    console.error('❌ Error fetching market status:', error.response?.data || error.message);
+    console.error(' Error fetching market status:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to fetch market status' });
   }
 });
@@ -789,7 +789,7 @@ router.get('/market/status', async (req, res) => {
 router.get('/calendar/ipo', async (req, res) => {
   try {
     const { from, to } = req.query;
-    console.log('Fetching IPO calendar');
+    console.log('came here');
 
     const response = await axios.get('https://finnhub.io/api/v1/calendar/ipo', {
       params: {

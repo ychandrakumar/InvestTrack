@@ -29,7 +29,7 @@ const MarketCalendar = ({ theme = 'light' }) => {
       setLoading(true);
       setError(null);
 
-      console.log('🔄 Fetching market data...');
+      console.log(' Fetching market data...');
 
       // Fetch market data in parallel
       const [earningsRes, iposRes, statusRes] = await Promise.allSettled([
@@ -38,7 +38,7 @@ const MarketCalendar = ({ theme = 'light' }) => {
         api.get('/stocks/market/status')
       ]);
 
-      console.log('📊 API Responses:', {
+      console.log(' API Responses:', {
         earnings: earningsRes.status === 'fulfilled' ? earningsRes.value.data : 'Failed',
         ipos: iposRes.status === 'fulfilled' ? iposRes.value.data : 'Failed',
         status: statusRes.status === 'fulfilled' ? statusRes.value.data : 'Failed'
@@ -63,34 +63,20 @@ const MarketCalendar = ({ theme = 'light' }) => {
       setIpos(iposData);
       setMarketStatus(statusData);
 
-      console.log('✅ Market data loaded:', {
+      console.log(' Market data loaded:', {
         earningsCount: earningsData.length,
         iposCount: iposData.length,
         hasStatus: !!statusData
       });
     } catch (error) {
-      console.error('❌ Error fetching market data:', error);
+      console.error(' Error fetching market data:', error);
       setError('Failed to fetch market data');
     } finally {
       setLoading(false);
     }
   };
 
-  const getMarketStatusColor = (status) => {
-    if (status?.isOpen) {
-      return 'green';
-    } else {
-      return 'red';
-    }
-  };
 
-  const getMarketStatusText = (status) => {
-    if (status?.isOpen) {
-      return 'Open';
-    } else {
-      return 'Closed';
-    }
-  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -152,15 +138,15 @@ const MarketCalendar = ({ theme = 'light' }) => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Market Calendar
+            IPO Calendar
           </h1>
           <p className={`mt-2 text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Track earnings, IPOs, and market events
+            Track IPOs
           </p>
         </div>
         
         {/* Market Status */}
-        {marketStatus && (
+        {/* {marketStatus && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -209,101 +195,10 @@ const MarketCalendar = ({ theme = 'light' }) => {
               </div>
             </Card>
           </motion.div>
-        )}
+        )} */}
       </div>
 
-      {/* Animated Tabs */}
-      <div className="h-[40rem] [perspective:1000px] relative flex flex-col max-w-6xl mx-auto w-full items-start justify-start">
-                <Tabs
-          key={theme} // Force re-render when theme changes
-          theme={theme}
-          tabs={[
-            {
-              title: "Earnings",
-              value: "earnings",
-              content: (
-                <div className={`w-full overflow-hidden relative h-full rounded-2xl p-6 backdrop-blur-xl ${
-                  theme === 'dark' 
-                    ? 'bg-gray-950/95 border border-gray-800/50 shadow-2xl' 
-                    : 'bg-gradient-to-br from-blue-50/95 via-indigo-50/95 to-blue-100/95 shadow-lg border border-blue-200/50'
-                }`}>
-                  <div className="flex justify-between items-center mb-6">
-                    <Title className={`text-2xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Upcoming Earnings
-                    </Title>
-                    <Badge color="blue">{earnings.length} events</Badge>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[30rem] overflow-y-auto">
-                    {earnings.length > 0 ? (
-                      earnings.slice(0, 20).map((earning, index) => (
-                        <div key={index} className={`flex items-center justify-between p-4 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm ${
-                          theme === 'dark' 
-                            ? 'bg-gray-900/95 border border-gray-800/50 hover:bg-gray-900/98' 
-                            : 'bg-gradient-to-r from-blue-50/95 to-indigo-50/95 hover:from-blue-50/98 hover:to-indigo-50/98 hover:shadow-lg border border-blue-100/50'
-                        }`}>
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${
-                              theme === 'dark' 
-                                ? 'bg-blue-500/20 border border-blue-500/30' 
-                                : 'bg-blue-100'
-                            }`}>
-                              <HiTrendingUp className={`w-5 h-5 ${
-                                theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
-                              }`} />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <div className={`font-semibold text-lg ${
-                                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                                }`}>{earning.symbol}</div>
-                                <Badge color="blue" className="text-xs">{earning.quarter}</Badge>
-                              </div>
-                              <div className={`text-sm mb-1 ${
-                                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                              }`}>
-                                {earning.name || earning.company}
-                              </div>
-                              <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                                <span className="flex items-center gap-1">
-                                  <HiCalendar className="w-3 h-3" />
-                                  {formatDate(earning.date)}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <HiClock className="w-3 h-3" />
-                                  {formatTime(earning.hour)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className={`text-xs ${
-                              theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                            }`}>Est. EPS</div>
-                            <div className={`font-semibold text-sm ${
-                              theme === 'dark' ? 'text-white' : 'text-gray-900'
-                            }`}>
-                              {earning.estimate ? `$${earning.estimate}` : 'N/A'}
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className={`col-span-full text-center py-8 ${
-                        theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                      }`}>
-                        No upcoming earnings found
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ),
-            },
-            {
-              title: "IPOs",
-              value: "ipos",
-              content: (
-                <div className={`w-full overflow-hidden relative h-full rounded-2xl p-6 backdrop-blur-xl ${
+    <div className={`w-full overflow-hidden relative h-full rounded-2xl p-6 backdrop-blur-xl ${
                   theme === 'dark' 
                     ? 'bg-gray-800/95 border border-gray-600/50 shadow-2xl' 
                     : 'bg-gradient-to-br from-emerald-50/95 via-green-50/95 to-teal-50/95 shadow-lg border border-emerald-200/50'
@@ -378,111 +273,6 @@ const MarketCalendar = ({ theme = 'light' }) => {
                     )}
                   </div>
                 </div>
-              ),
-            },
-            {
-              title: "Market Events",
-              value: "events",
-              content: (
-                <div className={`w-full overflow-hidden relative h-full rounded-2xl p-6 backdrop-blur-xl ${
-                  theme === 'dark' 
-                    ? 'bg-gradient-to-br from-indigo-900/95 via-purple-900/95 to-pink-900/95 border border-indigo-700/50 shadow-2xl' 
-                    : 'bg-gradient-to-br from-indigo-50/95 via-purple-50/95 to-pink-50/95 shadow-lg border border-indigo-200/50'
-                }`}>
-                  <Title className={`text-2xl mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Market Events
-                  </Title>
-                  <div className="space-y-4">
-                    <div className={`flex items-center justify-between p-4 rounded-lg shadow-sm transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm ${
-                      theme === 'dark' 
-                        ? 'bg-gradient-to-r from-indigo-800/95 to-purple-800/95 border border-indigo-600/50 hover:from-indigo-800/98 hover:to-purple-800/98' 
-                        : 'bg-gradient-to-r from-indigo-100/95 to-purple-100/95 hover:from-indigo-100/98 hover:to-purple-100/98 hover:shadow-lg'
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${
-                          theme === 'dark' 
-                            ? 'bg-green-500/20 border border-green-500/30' 
-                            : 'bg-green-100'
-                        }`}>
-                          <HiTrendingUp className={`w-5 h-5 ${
-                            theme === 'dark' ? 'text-green-400' : 'text-green-500'
-                          }`} />
-                        </div>
-                        <div>
-                          <div className={`font-semibold ${
-                            theme === 'dark' ? 'text-white' : 'text-gray-900'
-                          }`}>Market Open</div>
-                          <div className={`text-sm ${
-                            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                          }`}>9:30 AM ET</div>
-                        </div>
-                      </div>
-                      <Badge color="green">Daily</Badge>
-                    </div>
-                    
-                    <div className={`flex items-center justify-between p-4 rounded-lg shadow-sm transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm ${
-                      theme === 'dark' 
-                        ? 'bg-gradient-to-r from-purple-800/95 to-pink-800/95 border border-purple-600/50 hover:from-purple-800/98 hover:to-pink-800/98' 
-                        : 'bg-gradient-to-r from-purple-100/95 to-pink-100/95 hover:from-purple-100/98 hover:to-pink-100/98 hover:shadow-lg'
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${
-                          theme === 'dark' 
-                            ? 'bg-red-500/20 border border-red-500/30' 
-                            : 'bg-red-100'
-                        }`}>
-                          <HiTrendingDown className={`w-5 h-5 ${
-                            theme === 'dark' ? 'text-red-400' : 'text-red-500'
-                          }`} />
-                        </div>
-                        <div>
-                          <div className={`font-semibold ${
-                            theme === 'dark' ? 'text-white' : 'text-gray-900'
-                          }`}>Market Close</div>
-                          <div className={`text-sm ${
-                            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                          }`}>4:00 PM ET</div>
-                        </div>
-                      </div>
-                      <Badge color="red">Daily</Badge>
-                    </div>
-                    
-                    <div className={`flex items-center justify-between p-4 rounded-lg shadow-sm transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm ${
-                      theme === 'dark' 
-                        ? 'bg-gradient-to-r from-pink-800/95 to-rose-800/95 border border-pink-600/50 hover:from-pink-800/98 hover:to-rose-800/98' 
-                        : 'bg-gradient-to-r from-pink-100/95 to-rose-100/95 hover:from-pink-100/98 hover:to-rose-100/98 hover:shadow-lg'
-                    }`}>
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${
-                          theme === 'dark' 
-                            ? 'bg-blue-500/20 border border-blue-500/30' 
-                            : 'bg-blue-100'
-                        }`}>
-                          <HiCurrencyDollar className={`w-5 h-5 ${
-                            theme === 'dark' ? 'text-blue-400' : 'text-blue-500'
-                          }`} />
-                        </div>
-                        <div>
-                          <div className={`font-semibold ${
-                            theme === 'dark' ? 'text-white' : 'text-gray-900'
-                          }`}>Fed Meeting</div>
-                          <div className={`text-sm ${
-                            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                          }`}>Next: TBD</div>
-                        </div>
-                      </div>
-                      <Badge color="blue">Monthly</Badge>
-                    </div>
-                  </div>
-                </div>
-              ),
-            },
-          ]}
-          containerClassName="mb-8"
-          activeTabClassName={`${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-blue-500'} shadow-lg`}
-          tabClassName={`${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-all duration-200`}
-        />
-      </div>
     </motion.div>
   );
 };

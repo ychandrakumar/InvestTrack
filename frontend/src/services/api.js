@@ -26,18 +26,18 @@ api.interceptors.request.use(
       
       if (session?.access_token) {
         config.headers.Authorization = `Bearer ${session.access_token}`;
-        console.log('✅ Auth token added to request');
+        console.log(' Auth token added to request');
       } else {
-        console.log('❌ No auth token available');
+        console.log(' No auth token available');
       }
     } catch (error) {
-      console.error('❌ Error getting auth token:', error);
+      console.error('Error getting auth token:', error);
     }
     
     return config;
   },
   (error) => {
-    console.error('❌ Request interceptor error:', error);
+    console.error(' Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -45,11 +45,11 @@ api.interceptors.request.use(
 // Add response interceptor to handle auth errors
 api.interceptors.response.use(
   (response) => {
-    console.log('✅ API Response success:', response.config.url);
+    console.log(' API Response success:', response.config.url);
     return response;
   },
   async (error) => {
-    console.error('❌ API Response error:', {
+    console.error(' API Response error:', {
       url: error.config?.url,
       status: error.response?.status,
       message: error.response?.data?.error || error.message
@@ -57,7 +57,7 @@ api.interceptors.response.use(
     
     if (error.response?.status === 401) {
       // Token expired or invalid, redirect to login
-      console.log('🔐 Authentication failed, redirecting to login...');
+      console.log(' Authentication failed, redirecting to login...');
       window.location.href = '/';
     }
     return Promise.reject(error);

@@ -640,10 +640,10 @@ const Homepage = () => {
                   <HiOutlineBell className={`w-6 h-6 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`} />
                   <div>
                     <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Smart Alerts
+                      Multiple assets
                     </h3>
                     <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Price alerts and notifications
+                      track stocks,gold,silver.
                     </p>
                   </div>
                 </div>
