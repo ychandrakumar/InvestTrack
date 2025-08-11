@@ -48,7 +48,7 @@ const PORT = process.env.PORT || 5000;
 const start = async () => {
   try {
     // Start periodic stock price updates for existing stocks
-    // stockPriceService.startPeriodicUpdates();
+    stockPriceService.startPeriodicUpdates();
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
